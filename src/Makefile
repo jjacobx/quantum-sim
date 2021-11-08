@@ -1,20 +1,20 @@
-CC = g++
-CFLAGS = -O0
+CXX = g++
+CXXFLAGS = -O0 -Wall -Wextra -std=c++20
 
 DEPS = circuit.h
 
 ODIR = obj
-_OBJ = main.o circuit.o
+_OBJ = main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 BDIR = ../bin
 
 
 $(ODIR)/%.o: %.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
 sim-test: $(OBJ)
-	$(CC) -o $(BDIR)/$@ $^ $(CFLAGS)
+	$(CXX) -o $(BDIR)/$@ $^ $(CXXFLAGS)
 
 .PHONY: clean
 
