@@ -13,6 +13,14 @@ ostream& Gate::print(ostream& os) const {
   else return os << get<SMatrix>(this->get_op());
 }
 
+bool Gate::operator==(const Gate& rhs) const {
+  return std::visit([&](auto&& m1) -> bool { 
+    return std::visit([&](auto&& m2) -> bool {
+      return (m1 - m2).norm() < 0.01;
+    }, rhs.get_op());
+  }, this->get_op());
+}
+
 Gate Gate::operator*(const Gate& rhs) const {
   MatrixVar res = std::visit([&](auto&& m1) -> MatrixVar { 
     return std::visit([&](auto&& m2) -> MatrixVar {

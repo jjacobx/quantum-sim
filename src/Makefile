@@ -1,5 +1,7 @@
 CXX = g++
-CXXFLAGS = -O0 -Wall -Wextra -std=c++20
+CXXFLAGS = -O0 -Wall -Wextra -std=c++20 
+LDFLAGS = $(shell pkg-config --libs eigen3)
+INCS = $(shell pkg-config --cflags eigen3)
 
 DEPS = circuit.h
 
@@ -11,10 +13,10 @@ BDIR = ../bin
 
 
 $(ODIR)/%.o: %.cpp $(DEPS)
-	$(CXX) -c -o $@ $< $(CXXFLAGS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCS) -c -o $@ $< 
 
 sim.out: $(OBJ)
-	$(CXX) -o $(BDIR)/$@ $^ $(CXXFLAGS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCS) -o $(BDIR)/$@ $^
 
 .PHONY: clean
 

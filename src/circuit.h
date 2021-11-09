@@ -27,6 +27,7 @@ class Gate {
 
     MatrixRep rep() const;                  // representation type
     ostream& print(ostream& os) const;      // printing
+    bool operator==(const Gate& rhs) const; // comparison
     Gate operator*(const Gate& rhs) const;  // multiplication
     Gate operator&(const Gate& rhs) const;  // tensor product
     Gate operator^(int n) const;            // integer powers
