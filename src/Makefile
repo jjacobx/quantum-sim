@@ -13,7 +13,7 @@ BDIR = ../bin
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
-sim-test: $(OBJ)
+sim.out: $(OBJ)
 	$(CXX) -o $(BDIR)/$@ $^ $(CXXFLAGS)
 
 .PHONY: clean

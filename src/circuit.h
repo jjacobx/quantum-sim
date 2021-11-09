@@ -1,3 +1,4 @@
+#pragma once
 #include <complex>
 #include <iostream>
 #include <stdexcept>
@@ -6,7 +7,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-#pragma once
 
 using namespace Eigen;
 using namespace std;
@@ -20,11 +20,12 @@ enum class MatrixRep { dense, sparse };
 
 class Gate {
   public: 
-    Gate(MatrixVar op_) { assign(op_); }
+    Gate(MatrixVar op_) : op(op_) { assign(op_); }
 
-    MatrixRep rep;
+    MatrixVar get_op() const { return this->op; }
+    int get_dim() const { return this->dim; }
 
-    MatrixVar get_op() const { return op; } // access matrix
+    MatrixRep rep() const;                  // representation type
     ostream& print(ostream& os) const;      // printing
     Gate operator*(const Gate& rhs) const;  // multiplication
     Gate operator&(const Gate& rhs) const;  // tensor product
@@ -37,14 +38,11 @@ class Gate {
 
     template<class Derived>
     void assign(EigenBase<Derived>& op_) {
-      op = op_.derived();
-      dim = op_.rows();
-
-      if (dim != op_.cols())
+      if (op_.rows() != op_.cols())
         throw std::invalid_argument("Operator needs to be a square matrix");
+      dim = op_.rows();
       if (dim == 1 || (dim & (dim - 1)))
         throw std::invalid_argument("Dimensions of the operator need to be positive integer powers of 2");
-
       qubits.assign((int)log2(dim), -1);
     }
 
