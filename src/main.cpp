@@ -1,28 +1,14 @@
 #include "circuit.h"
 #include <iostream>
-#include <unsupported/Eigen/KroneckerProduct>
 
-
-using namespace std;
+using namespace qol;
 
 int main()
 {
-  cout << "I = " << endl << Ops::I << endl;
   cout << "X = " << endl << Ops::X << endl;
-  cout << "Y = " << endl << Ops::Y << endl;
-  cout << "Z = " << endl << Ops::Z << endl;
-  cout << "H = " << endl << Ops::H << endl;
-  cout << "S = " << endl << Ops::S << endl;
-  cout << "T = " << endl << Ops::T << endl;
+  cout << "X * X = " << endl << Ops::X * Ops::X << endl;
+  cout << "X ^ 0 = " << endl << (Ops::X ^ 0) << endl;
   cout << "CNOT = " << endl << Ops::CNOT << endl;
-  cout << "CCNOT = " << endl << Ops::CCNOT << endl;
-
-  cout << "Rx(PI/4) = " << endl << Ops::Rx(M_PI / 4.0) << endl;
-  cout << "Ry(PI/4) = " << endl << Ops::Ry(M_PI / 4.0) << endl;
-  cout << "Rz(PI/4) = " << endl << Ops::Rz(M_PI / 4.0) << endl;
-
-  SMatrixcd res = KroneckerProductSparse<SMatrixcd, Matrix2cd>(Ops::CNOT, Ops::H);
-  cout << "CNOT o H = " << endl << res << endl;
-  cout << (int)sqrt(Ops::X.size()) << endl;
-  cout << Ops::Expi(Ops::X, M_PI / 2.0) << endl;
+  cout << "CNOT ^ 3 = " << endl << (Ops::CNOT ^ 3) << endl;
+  cout << "X & CNOT = " << endl << (Ops::X & Ops::CNOT) << endl;
 }

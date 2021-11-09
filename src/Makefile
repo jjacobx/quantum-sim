@@ -4,7 +4,7 @@ CXXFLAGS = -O0 -Wall -Wextra -std=c++20
 DEPS = circuit.h
 
 ODIR = obj
-_OBJ = main.o
+_OBJ = main.o circuit.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 BDIR = ../bin
