@@ -14,6 +14,9 @@ ostream& Gate::print(ostream& os) const {
 }
 
 bool Gate::operator==(const Gate& rhs) const {
+  if (this->get_dim() != rhs.get_dim())
+    throw invalid_argument("Cannot compare gates with different dimensions");
+
   return std::visit([&](auto&& m1) -> bool { 
     return std::visit([&](auto&& m2) -> bool {
       return (m1 - m2).norm() < 0.01;
@@ -22,6 +25,9 @@ bool Gate::operator==(const Gate& rhs) const {
 }
 
 Gate Gate::operator*(const Gate& rhs) const {
+  if (this->get_dim() != rhs.get_dim())
+    throw invalid_argument("Cannot multiply gates with different dimensions");
+
   MatrixVar res = std::visit([&](auto&& m1) -> MatrixVar { 
     return std::visit([&](auto&& m2) -> MatrixVar {
       return (m1 * m2).eval();

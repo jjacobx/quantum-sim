@@ -40,10 +40,10 @@ class Gate {
     template<class Derived>
     void assign(EigenBase<Derived>& op_) {
       if (op_.rows() != op_.cols())
-        throw std::invalid_argument("Operator needs to be a square matrix");
+        throw invalid_argument("Operator needs to be a square matrix");
       dim = op_.rows();
       if (dim == 1 || (dim & (dim - 1)))
-        throw std::invalid_argument("Dimensions of the operator need to be positive integer powers of 2");
+        throw invalid_argument("Dimensions of the operator need to be positive integer powers of 2");
       qubits.assign((int)log2(dim), -1);
     }
 
@@ -111,7 +111,8 @@ namespace Ops {
     }).sparseView() 
   };
 
-  inline Gate Id(int n) {
+  inline Gate Id(int n_qubits) {
+    int n = 1 << n_qubits;
     if (n == 2) return I;
     SMatrix id(n, n);
     id.setIdentity();
