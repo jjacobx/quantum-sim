@@ -1,7 +1,7 @@
 CXX = g++
-CXXFLAGS = -O0 -Wall -Wextra -std=c++20 -g
+CXXFLAGS = -g -O0 -Wall -Wextra -std=c++20 -mavx2
 LDFLAGS = $(shell pkg-config --libs gtest eigen3)
-INCS = -I./ -I../../src $(shell pkg-config --cflags gtest eigen3)
+INCS = -I../../src $(shell pkg-config --cflags gtest eigen3)
 
 ODIR = ../../src/obj
 ODIR_TEST = obj
@@ -22,3 +22,5 @@ test_all.out: $(OBJ)
 
 clean:
 	rm -f core $(ODIR_TEST)/*.o
+
+$(shell mkdir -p $(ODIR_TEST))

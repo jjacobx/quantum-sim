@@ -1,11 +1,10 @@
 #include "circuit.h"
 #include <iostream>
 
-using namespace qol;
-
 int main()
 {
   cout << "X = " << endl << Ops::X << endl;
+  cout << "-I = " << endl << -Ops::I << endl;
   cout << "X * X = " << endl << Ops::X * Ops::X << endl;
   cout << "X ^ 0 = " << endl << (Ops::X ^ 0) << endl;
   cout << "CNOT = " << endl << Ops::CNOT << endl;

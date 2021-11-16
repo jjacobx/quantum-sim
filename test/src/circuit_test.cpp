@@ -13,7 +13,6 @@ class GateTest : public::testing::Test {
     }
 };
 
-
 TEST_F(GateTest, gate_comparison) {
   EXPECT_EQ(Ops::I, Ops::I);
   EXPECT_NE(Ops::X, Ops::Y);
@@ -30,11 +29,16 @@ TEST_F(GateTest, gate_creation_sparse_dense) {
   EXPECT_EQ(Gate(m_dense), Gate(m_sparse));
 }
 
-TEST_F(GateTest, gate_creation_invalid) {
+TEST_F(GateTest, gate_creation_invalid_dimensions) {
   DMatrix m_invalid_1 {{1, 2, 3}, {4, 5, 6}};
   DMatrix m_invalid_2 {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
   EXPECT_THROW(Gate g_invalid_1 = Gate(m_invalid_1), invalid_argument);
   EXPECT_THROW(Gate g_invalid_2 = Gate(m_invalid_2), invalid_argument);
+}
+
+TEST_F(GateTest, gate_creation_non_unitary) {
+  DMatrix m_non_unitary {{1, 2}, {3, 4}};
+  EXPECT_THROW(Gate g_non_unitary = Gate(m_non_unitary), invalid_argument);
 }
 
 TEST_F(GateTest, gate_multiplication_dense) {
@@ -69,4 +73,11 @@ TEST_F(GateTest, gate_kronecker_dense) {
 TEST_F(GateTest, gate_kronecker_sparse) {
   EXPECT_EQ(Ops::Id(2) & Ops::Id(2), Ops::Id(4));
   EXPECT_EQ(Ops::Id(2) & Ops::Id(3) & Ops::Id(2), Ops::Id(7));
+}
+
+TEST_F(GateTest, gate_adjoint) {
+  DMatrix m_anti_hermitian {{0, 1}, {-1, 0}};
+  EXPECT_EQ(Ops::X.adjoint(), Ops::X);
+  EXPECT_EQ(Gate(m_anti_hermitian).adjoint(), -Gate(m_anti_hermitian));
+  EXPECT_EQ(Ops::CCNOT.adjoint(), Ops::CCNOT);
 }

@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O0 -Wall -Wextra -std=c++20 -fsanitize=address
+CXXFLAGS = -g -Og -Wall -Wextra -std=c++20 -mavx2
 LDFLAGS = $(shell pkg-config --libs eigen3)
 INCS = $(shell pkg-config --cflags eigen3)
 
@@ -22,3 +22,5 @@ sim.out: $(OBJ)
 
 clean:
 	rm -f core $(ODIR)/*.o
+
+$(shell mkdir -p $(ODIR))

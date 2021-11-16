@@ -21,6 +21,8 @@ typedef MatrixXcd DMatrix;
 typedef SparseMatrix<dcomplex> SMatrix;
 typedef variant<DMatrix, SMatrix> MatrixVar;
 
+class Gate;
+ostream& operator<<(ostream& os, Gate const& g);
 
 enum class MatrixRep { dense, sparse };
 
@@ -44,7 +46,10 @@ class Gate {
     Gate operator*(const Gate& rhs) const;  /** multiplication */
     Gate operator&(const Gate& rhs) const;  /** tensor product */
     Gate operator^(int n) const;            /** integer powers */
+    Gate operator-() const;                 /** unary negation */
     Gate adjoint() const;
+
+    friend ostream& operator<<(ostream& os, Gate const& g);
 
   private:
     MatrixVar op;
@@ -187,11 +192,5 @@ namespace Ops {
       {exp(-1.0i * theta / 2.0),                      0.0},
       {                     0.0, exp(-1.0i * theta / 2.0)}
     })));
-  }
-}
-
-namespace qol {
-  inline ostream& operator<<(ostream& os, Gate g) {
-    return g.print(os);
   }
 }
