@@ -40,9 +40,11 @@ class Gate {
     MatrixRep rep() const;                  /** representation type */
     ostream& print(ostream& os) const;      /** printing */
     bool operator==(const Gate& rhs) const; /** comparison */
+    bool operator!=(const Gate& rhs) const; /** negative comparison */
     Gate operator*(const Gate& rhs) const;  /** multiplication */
     Gate operator&(const Gate& rhs) const;  /** tensor product */
     Gate operator^(int n) const;            /** integer powers */
+    Gate adjoint() const;
 
   private:
     MatrixVar op;
@@ -54,6 +56,7 @@ class Gate {
      * @param op_ a unitary dense or sparse matrix
      */
     void assign(MatrixVar op_);
+    void check_unitarity();
 
     /** Helper method to match either dense or sparse matrix*/
     template<class Derived>
@@ -64,6 +67,8 @@ class Gate {
       if (dim == 1 || (dim & (dim - 1)))
         throw invalid_argument("Dimensions of the operator need to be positive integer powers of 2");
       qubits.assign((int)log2(dim), -1);
+
+      check_unitarity();
     }
 
     

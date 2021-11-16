@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -O0 -Wall -Wextra -std=c++20 
+CXXFLAGS = -O0 -Wall -Wextra -std=c++20 -fsanitize=address
 LDFLAGS = $(shell pkg-config --libs eigen3)
 INCS = $(shell pkg-config --cflags eigen3)
 

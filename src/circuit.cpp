@@ -1,6 +1,8 @@
 #include "circuit.h"
 #include <unsupported/Eigen/KroneckerProduct>
 
+using namespace qol;
+
 MatrixRep Gate::rep() const {
   if (std::holds_alternative<MatrixXcd>(this->op))
     return MatrixRep::dense;
@@ -9,7 +11,7 @@ MatrixRep Gate::rep() const {
 
 ostream& Gate::print(ostream& os) const {
   if (this->rep() == MatrixRep::dense)
-    return os << get<MatrixXcd>(this->get_op());
+    return os << get<DMatrix>(this->get_op());
   else return os << get<SMatrix>(this->get_op());
 }
 
@@ -22,6 +24,10 @@ bool Gate::operator==(const Gate& rhs) const {
       return (m1 - m2).norm() < 0.01;
     }, rhs.get_op());
   }, this->get_op());
+}
+
+bool Gate::operator!=(const Gate& rhs) const {
+  return !(*this == rhs);
 }
 
 Gate Gate::operator*(const Gate& rhs) const {
@@ -55,13 +61,26 @@ Gate Gate::operator^(int n) const {
   if (n < 0)
     throw invalid_argument("n needs to be a non-negative integer");
   if (n == 0)
-    return Ops::Id(this->dim);
+    return Ops::Id(this->qubits.size());
   else
     return *this * (*this ^ (n - 1));
+}
+
+Gate Gate::adjoint() const {
+  MatrixVar res = visit([&](auto&& m) -> MatrixVar { 
+    return (decltype(m))m.adjoint().eval();
+  }, this->get_op());
+  
+  return Gate(res);
 }
 
 void Gate::assign(MatrixVar op_) {
   if (this->rep() == MatrixRep::dense)
     assign(std::get<DMatrix>(op_));
   else  assign(std::get<SMatrix>(op_));
+}
+
+void Gate::check_unitarity() {
+  if (*this * (*this).adjoint() != Ops::Id(this->qubits.size()))
+    throw invalid_argument("The operator needs to be a unitary matrix");
 }

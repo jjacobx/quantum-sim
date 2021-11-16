@@ -12,4 +12,6 @@ int main()
   cout << "CNOT ^ 3 = " << endl << (Ops::CNOT ^ 3) << endl;
   cout << "X & CNOT = " << endl << (Ops::X & Ops::CNOT) << endl;
   cout << "X ^ 2 == ID" << endl << ((Ops::X ^ 2) == Ops::I) << endl;
+  cout << "Y.adj = " << endl << Ops::Y.adjoint() << endl;
+  cout << "Y * Y.adj = " << endl << Ops::Y * Ops::Y.adjoint() << endl;
 }
