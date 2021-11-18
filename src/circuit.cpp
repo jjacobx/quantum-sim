@@ -1,34 +1,33 @@
 #include "circuit.h"
 #include <unsupported/Eigen/KroneckerProduct>
 
-ostream& operator<<(ostream& os, Gate const& g) {
-  return g.print(os);
+ostream& operator<<(ostream& os, QMatrix const& q) {
+  return q.print(os);
 }
 
-MatrixRep Gate::rep() const {
-  if (holds_alternative<MatrixXcd>(this->op))
-    return MatrixRep::dense;
-  else return MatrixRep::sparse;
+EigenRep QMatrix::rep() const {
+  if (holds_alternative<DMatrix>(this->op))
+    return EigenRep::dense;
+  else return EigenRep::sparse;
 }
 
-ostream& Gate::print(ostream& os) const {
-  if (this->rep() == MatrixRep::dense)
+ostream& QMatrix::print(ostream& os) const {
+  if (this->rep() == EigenRep::dense)
     return os << get<DMatrix>(this->get_op());
   else return os << get<SMatrix>(this->get_op());
 }
 
-bool Gate::operator==(const Gate& rhs) const {
-  if (this->get_dim() != rhs.get_dim())
-    throw invalid_argument("Cannot compare gates with different dimensions");
-
+bool QMatrix::operator==(const QMatrix& rhs) const {
   return visit([&](auto&& m1) -> bool { 
     return visit([&](auto&& m2) -> bool {
+      if ((m1.cols() != m2.cols()) || (m1.rows() != m2.rows()))
+        throw invalid_argument("Cannot compare matrices with different dimensions");
       return (m1 - m2).norm() < 0.01;
     }, rhs.get_op());
   }, this->get_op());
 }
 
-bool Gate::operator!=(const Gate& rhs) const {
+bool QMatrix::operator!=(const QMatrix& rhs) const {
   return !(*this == rhs);
 }
 
@@ -46,11 +45,11 @@ Gate Gate::operator*(const Gate& rhs) const {
 
 Gate Gate::operator&(const Gate& rhs) const {
   MatrixVar res;
-  if (this->rep() == MatrixRep::dense && rhs.rep() == MatrixRep::dense) {
+  if (this->rep() == EigenRep::dense && rhs.rep() == EigenRep::dense) {
     res = (DMatrix)KroneckerProduct<DMatrix, DMatrix>(get<DMatrix>(this->get_op()), get<DMatrix>(rhs.get_op()));
-  } else if (this->rep() == MatrixRep::dense && rhs.rep() == MatrixRep::sparse) {
+  } else if (this->rep() == EigenRep::dense && rhs.rep() == EigenRep::sparse) {
     res = (SMatrix)KroneckerProductSparse<DMatrix, SMatrix>(get<DMatrix>(this->get_op()), get<SMatrix>(rhs.get_op()));
-  } else if (this->rep() == MatrixRep::sparse && rhs.rep() == MatrixRep::dense) {
+  } else if (this->rep() == EigenRep::sparse && rhs.rep() == EigenRep::dense) {
     res = (SMatrix)KroneckerProductSparse<SMatrix, DMatrix>(get<SMatrix>(this->get_op()), get<DMatrix>(rhs.get_op()));
   } else {
     res = (SMatrix)KroneckerProductSparse<SMatrix, SMatrix>(get<SMatrix>(this->get_op()), get<SMatrix>(rhs.get_op()));
@@ -85,7 +84,8 @@ Gate Gate::adjoint() const {
 }
 
 void Gate::assign(MatrixVar op_) {
-  if (this->rep() == MatrixRep::dense)
+  this->op = op_;
+  if (this->rep() == EigenRep::dense)
     assign(std::get<DMatrix>(op_));
   else  assign(std::get<SMatrix>(op_));
 }

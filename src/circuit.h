@@ -21,38 +21,48 @@ typedef MatrixXcd DMatrix;
 typedef SparseMatrix<dcomplex> SMatrix;
 typedef variant<DMatrix, SMatrix> MatrixVar;
 
-class Gate;
-ostream& operator<<(ostream& os, Gate const& g);
+class QMatrix;
+ostream& operator<<(ostream& os, QMatrix const& q);
 
-enum class MatrixRep { dense, sparse };
+enum class EigenRep { dense, sparse };
+
+class QMatrix {
+  public:
+    /** @returns The underlying matrix operator as a variant */
+    MatrixVar get_op() const { return this->op; }
+
+    EigenRep rep() const;                      /** representation type */
+    ostream& print(ostream& os) const;         /** printing */
+    bool operator==(const QMatrix& rhs) const; /** comparison */
+    bool operator!=(const QMatrix& rhs) const; /** negative comparison */
+
+    // virtual QMatrix operator*(const QMatrix& rhs) const;  /** multiplication */
+    // virtual QMatrix operator&(const QMatrix& rhs) const;  /** tensor product */
+
+    friend ostream& operator<<(ostream& os, QMatrix const& q);
+
+  protected:
+    MatrixVar op;
+};
 
 /**
  * @class Gate
  * @brief A quantum gate represented by either dense or sparse matrix. 
  */
-class Gate {
+class Gate : public QMatrix {
   public: 
-    Gate(MatrixVar op_) : op(op_) { assign(op_); }
+    Gate(MatrixVar op_) { assign(op_); }
 
-    /** @returns The underlying matrix operator as a variant */
-    MatrixVar get_op() const { return this->op; }
     /** @returns The number of columns/rows of a the operator */
     int get_dim() const { return this->dim; }
 
-    MatrixRep rep() const;                  /** representation type */
-    ostream& print(ostream& os) const;      /** printing */
-    bool operator==(const Gate& rhs) const; /** comparison */
-    bool operator!=(const Gate& rhs) const; /** negative comparison */
     Gate operator*(const Gate& rhs) const;  /** multiplication */
     Gate operator&(const Gate& rhs) const;  /** tensor product */
     Gate operator^(int n) const;            /** integer powers */
     Gate operator-() const;                 /** unary negation */
     Gate adjoint() const;
 
-    friend ostream& operator<<(ostream& os, Gate const& g);
-
   private:
-    MatrixVar op;
     int dim;
     vector<int> qubits;
 
